@@ -21,20 +21,20 @@
               </strong>
             </h6>
           </div>
-          <template v-if="isLoading">
-            <div v-for="dt in 3" :key="dt" class="row mb-2">
-              <div class="col">
-                <b-skeleton type="input" class="py-3" />
-              </div>
-            </div>
-          </template>
-          <div v-for="(dt,i) in options" v-else :key="'o-' + i">
+          <div
+            v-for="(dt, i) in options"
+            :key="i"
+          >
             <div
+              v-if="parseInt(dt, i)"
               class="row mx-0 card clickable mb-2 p-3"
-              @click="onSelected(dt)"
+              @click="onSelected(dt, i)"
             >
               <h6>
-                {{ dt.name }}
+                <strong>
+                  {{ labels[i] }}<br>
+                </strong>
+                {{ options.prefix }} {{ dt | number }}
               </h6>
             </div>
           </div>
@@ -50,7 +50,7 @@ export default {
   },
   props: {
     title: {
-      default: 'Pilih',
+      default: 'Pilih Billing Cycle',
       type: String
     },
     initialOptions: {
@@ -62,9 +62,16 @@ export default {
     return {
       input: null,
       state: false,
+      labels: {
+        monthly: 'Bulanan',
+        quarterly: '3 Bulanan',
+        semiannually: '6 Bulanan',
+        annually: 'Tahunan',
+        biennially: '2 Tahunan',
+        triennially: '3 Tahunan'
+      },
       options: [],
       selected: null,
-      endpoint: 'app/fetchProduct',
       isError: false,
       isLoading: false,
       debounce: null
@@ -84,45 +91,24 @@ export default {
         this.fetchData()
       }, 1000)
     },
-    fetchData () {
-      const vm = this
-      this.isError = false
-      this.isLoading = true
-      const params = {
-        page: vm.page,
-        search: vm.search
-      }
-      this.$store.dispatch(this.endpoint, params)
-        .then((rslt) => {
-          this.options = rslt.data.data.data
-          this.total = rslt.data.data.total
-          vm.isError = false
-          vm.isLoading = false
-        }).catch((err) => {
-          console.log('err', err)
-          //   vm.$store.commit('alert/setAlert', {
-          //     type: 'fail',
-          //     msg: 'Gagal Mengambil Data'
-          //   })
-          vm.isError = true
-          vm.isLoading = false
-        })
-    },
     show () {
       console.log('initialOptions: ', this.initialOptions)
       if (this.initialOptions) {
         this.options = this.initialOptions
       }
       this.state = true
-      this.search = null
-      this.fetchData()
     },
     reset () {
       this.input = null
       this.selected = null
     },
-    onSelected (dt) {
-      this.selected = dt
+    onSelected (dt, i) {
+      this.selected = {
+        labels: this.labels[i],
+        prefix: this.options.prefix,
+        key: i,
+        dt
+      }
       this.$emit('submit', this.selected)
       this.state = false
     }

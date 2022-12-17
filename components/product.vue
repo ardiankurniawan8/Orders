@@ -28,7 +28,7 @@
               </div>
             </div>
           </template>
-          <div v-for="(dt,i) in defaultOptions" v-else :key="'o-' + i">
+          <div v-for="(dt,i) in options" v-else :key="'o-' + i">
             <div
               class="row mx-0 card clickable mb-2 p-3"
               @click="onSelected(dt)"
@@ -59,43 +59,6 @@ export default {
       input: null,
       state: false,
       options: [],
-      defaultOptions: [
-        {
-          pid: 1,
-          gid: 1,
-          type: 'hostingaccount',
-          name: 'Merdeka 1',
-          slug: 'merdeka-1',
-          product_url: 'http://dev-whmcs.jagoanhosting.com/index.php?rp=/store/cloud-hosting/merdeka-1',
-          description: '',
-          module: 'cpanel',
-          paytype: 'recurring',
-          pricing: {
-            IDR: {
-              prefix: 'Rp',
-              suffix: ' IDR',
-              msetupfee: '0.00',
-              qsetupfee: '0.00',
-              ssetupfee: '0.00',
-              asetupfee: '0.00',
-              bsetupfee: '0.00',
-              tsetupfee: '0.00',
-              monthly: '10000.00',
-              quarterly: '30000.00',
-              semiannually: '60000.00',
-              annually: '120000.00',
-              biennially: '240000.00',
-              triennially: '360000.00'
-            }
-          },
-          customfields: {
-            customfield: []
-          },
-          configoptions: {
-            configoption: []
-          }
-        }
-      ],
       selected: null,
       endpoint: 'app/fetchProduct',
       isError: false,
@@ -127,8 +90,7 @@ export default {
       }
       this.$store.dispatch(this.endpoint, params)
         .then((rslt) => {
-          this.options = rslt.data.data.data
-          this.total = rslt.data.data.total
+          this.options = rslt.products.product
           vm.isError = false
           vm.isLoading = false
         }).catch((err) => {

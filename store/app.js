@@ -16,23 +16,42 @@ const app = {
     }
   },
   actions: {
-    fetchProduct ({ state }, payload) {
-      const params = {}
-
-      if (payload) {
-        params.action = 'GetProducts'
-        params.responsetype = 'json'
-        params.identifier = state.identifier
-        params.secret = state.secret
-      }
-      //   const params = new FormData()
-
-      //   params.append('action', 'GetProducts')
-      //   params.append('responsetype', 'json')
-      //   params.append('identifier', state.identifier)
-      //   params.append('secret', state.secret)
+    login ({ state }, payload) {
       return new Promise((resolve, reject) => {
-        axios.post(state.api + '?action=GetProducts&responsetype=json&identifier=' + state.identifier + '&secret=' + state.secret, {}, {
+        axios.post('/api/' + '?action=ValidateLogin&responsetype=json&identifier=' + state.identifier + '&secret=' + state.secret + '&email=' + payload.email + '&password2=' + payload.password, {},
+          {
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Content-Type': 'application/json'
+            },
+            withCredentials: true
+          })
+          .then((resp) => {
+            if (resp) {
+              return resolve(resp.data)
+            }
+            //   reject(resp.data)
+          }).catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    register ({ state }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post('/api/' + '?action=AddClient&responsetype=json&identifier=' +
+         state.identifier +
+         '&secret=' + state.secret +
+         '&email=' + payload.email +
+         '&password2=' + payload.password +
+         '&firstname=' + payload.firstname +
+         '&phonenumber=' + payload.phonenumber +
+         '&address1=-' +
+         '&city=-' +
+         '&state=-' +
+         '&country=ID' +
+         '&postcode=-' +
+         '&lastname=-', {},
+        {
           headers: {
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json'
@@ -40,8 +59,95 @@ const app = {
           withCredentials: true
         })
           .then((resp) => {
-            if (resp.data.status) {
-              return resolve(resp)
+            if (resp) {
+              return resolve(resp.data)
+            }
+            //   reject(resp.data)
+          }).catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    order ({ state }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post('/api/' + '?action=AddOrder&responsetype=json&identifier=' +
+         state.identifier +
+         '&secret=' + state.secret +
+         '&clientid=' + payload.clientid +
+         '&paymentmethod=banktransfer' +
+         '&pid=' + payload.productid,
+        '&billingcycle=' + payload.billingcycle,
+        {},
+        {
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json'
+          },
+          withCredentials: true
+        })
+          .then((resp) => {
+            if (resp) {
+              return resolve(resp.data)
+            }
+            //   reject(resp.data)
+          }).catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    fetchProduct ({ state }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post('/api/' + '?action=GetProducts&responsetype=json&identifier=' + state.identifier + '&secret=' + state.secret, {},
+          {
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Content-Type': 'application/json'
+            },
+            withCredentials: true
+          })
+          .then((resp) => {
+            if (resp.data.result === 'success') {
+              return resolve(resp.data)
+            }
+            //   reject(resp.data)
+          }).catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    fetchTld ({ state }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post('/api/' + '?action=GetTLDPricing&responsetype=json&identifier=' + state.identifier + '&secret=' + state.secret, {},
+          {
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Content-Type': 'application/json'
+            },
+            withCredentials: true
+          })
+          .then((resp) => {
+            if (resp.data.result === 'success') {
+              return resolve(resp.data)
+            }
+            //   reject(resp.data)
+          }).catch((err) => {
+            reject(err)
+          })
+      })
+    },
+    checkWhoIs ({ state }, payload) {
+      return new Promise((resolve, reject) => {
+        axios.post('/api/' + '?action=DomainWhois&responsetype=json&identifier=' + state.identifier + '&secret=' + state.secret + '&domain=' + payload.domain, {},
+          {
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Content-Type': 'application/json'
+            },
+            withCredentials: true
+          })
+          .then((resp) => {
+            if (resp) {
+              return resolve(resp.data)
             }
             //   reject(resp.data)
           }).catch((err) => {

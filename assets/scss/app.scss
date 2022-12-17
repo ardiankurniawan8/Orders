@@ -1,3 +1,10 @@
+@import "vue-multiselect.scss";
 .clickable {
     cursor: pointer;
+}
+.not-clickable {
+    cursor: not-allowed;
+}
+.bg-soft {
+    background-color: lightblue;
 }
